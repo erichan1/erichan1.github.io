@@ -1,1 +1,2 @@
-# erichan1.github.io
+# AgarSimple
+Agar - simplified
