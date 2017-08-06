@@ -1,5 +1,6 @@
 /*This is boxgame. There will be a red box on a white background. Walls will move from the right side towards the left. The box can be moved in any direction. If it collides with a box */
 
+var updateInterval = 10; //How many milliseconds between each game update
 var myBox; //equivalent to myGamePiece in the tutorial.
 var myObstacles;
 var myWalls; 
@@ -26,10 +27,11 @@ var myGameArea = {
         this.canvas.height = 270;
         this.context = this.canvas.getContext("2d");
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-        this.interval=setInterval(updateGameArea, 10); 
+        this.interval=setInterval(updateGameArea, updateInterval);
+        this.intervalTwo = setInterval(keyboard,updateInterval);
         
+        myGameArea.keys= (myGameArea.keys || [] ); //put outside function. don't need to press a key to make keys array.  
         window.addEventListener('keydown',function(e) {
-            myGameArea.keys= (myGameArea.keys || [] );
             myGameArea.keys[e.keyCode] = true; 
         })
         window.addEventListener('keyup',function(e) {
@@ -169,21 +171,30 @@ sets speed when arrowkeys are pressed. Orientation one.
 */ 
 function keyboardOne(myComponent) {
     if(myGameArea.keys && myGameArea.keys[39]) {
-            //myBox.incrementSpeedX(4);
-            //myBox.setAccelX(4,50);
-            myComponent.setSpeedX(1); //makes box go right   
+        //myBox.incrementSpeedX(4);
+        myComponent.setSpeedX(1); //makes box go right 
     }
     if(myGameArea.keys && myGameArea.keys[37]) {
-            //myBox.incrementSpeedX(-4);
-            myComponent.setSpeedX(-1); //makes box go left
+        myComponent.setSpeedX(-1); //makes box go left
     }
+    if(myGameArea.keys && myGameArea.keys[39] && myGameArea.keys[37] && myComponent.speedX!=0) {
+        myComponent.setSpeedX(0); //makes box go left
+    }
+    if(myGameArea.keys && !myGameArea.keys[39] && !myGameArea.keys[37] && myComponent.speedX!=0) {
+        myComponent.setSpeedX(0); //makes box go left
+    }
+    
     if(myGameArea.keys && myGameArea.keys[38]) {
-            //myBox.incrementSpeedY(-4);
-            myComponent.setSpeedY(-1); //makes box go up
+        myComponent.setSpeedY(-1); //makes box go up
     }
     if(myGameArea.keys && myGameArea.keys[40]) {
-            //myBox.incrementSpeedY(4);
-            myComponent.setSpeedY(1); //makes box go down.
+        myComponent.setSpeedY(1); //makes box go down.
+    }
+    if(myGameArea.keys && myGameArea.keys[38] && myGameArea.keys[40] && myComponent.speedY!=0) {
+        myComponent.setSpeedY(0);   
+    }
+    if(myGameArea.keys && !myGameArea.keys[38] && !myGameArea.keys[40] && myComponent.speedY!=0) {
+        myComponent.setSpeedY(0);   
     }
 }
 
@@ -194,32 +205,41 @@ sets speed when WASD are pressed. Orientation one.
 */ 
 function keyboardTwo(myComponent) {
     if(myGameArea.keys && myGameArea.keys[68]) {
-            //myBox.incrementSpeedX(4);
-            //myBox.setAccelX(4,50);
-            myComponent.setSpeedX(1); //makes box go right   
+        //myBox.incrementSpeedX(4);
+        myComponent.setSpeedX(1); //makes box go right 
     }
     if(myGameArea.keys && myGameArea.keys[65]) {
-            //myBox.incrementSpeedX(-4);
-            myComponent.setSpeedX(-1); //makes box go left
+        myComponent.setSpeedX(-1); //makes box go left
     }
+    if(myGameArea.keys && myGameArea.keys[65] && myGameArea.keys[68] && myComponent.speedX!=0) {
+        myComponent.setSpeedX(0); //makes box go left
+    }
+    if(myGameArea.keys && !myGameArea.keys[65] && !myGameArea.keys[68] && myComponent.speedX!=0) {
+        myComponent.setSpeedX(0); //makes box go left
+    }
+    
     if(myGameArea.keys && myGameArea.keys[87]) {
-            //myBox.incrementSpeedY(-4);
-            myComponent.setSpeedY(-1); //makes box go up
+        myComponent.setSpeedY(-1); //makes box go up
     }
     if(myGameArea.keys && myGameArea.keys[83]) {
-            //myBox.incrementSpeedY(4);
-            myComponent.setSpeedY(1); //makes box go down.
+        myComponent.setSpeedY(1); //makes box go down.
     }
+    if(myGameArea.keys && myGameArea.keys[83] && myGameArea.keys[87] && myComponent.speedY!=0) {
+        myComponent.setSpeedY(0);   
+    }
+    if(myGameArea.keys && !myGameArea.keys[83] && !myGameArea.keys[87] && myComponent.speedY!=0) {
+        myComponent.setSpeedY(0);   
+    }
+}
+    
+function keyboard() {
+    
 }
 
 //STATIC METHOD: updates game area. interval shown in var myGameArea.
-function updateGameArea() {
+function updateGameArea(int) {
     myGameArea.clear(); //clears game area
-    
-    //myBox.setSpeedX(0); //sets speeds to 0
-    //myBox.setSpeedY(0);
-    myBoxTwo.setSpeedX(0); //sets speeds to 0
-    myBoxTwo.setSpeedY(0);
+
     keyboardOne(myBox); //sets speed according to keyboard
     keyboardTwo(myBoxTwo);
     
