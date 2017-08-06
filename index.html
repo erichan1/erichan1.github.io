@@ -10,13 +10,13 @@ canvas {
 </style>
 </head>
 <body onload = "startGame()" >
-<p>We have created a game area! (or at least an empty canvas)</p>
-<!--
-<button onmousedown="moveUp()" onmouseup="stopMove()">Go uppers</button>
-<button onmousedown="moveDown()" onmouseup="stopMove()">get down boi</button>
-<button onmousedown = "moveLeft()" onmouseup="stopMove()">Slide to the left</button>
-<button onmousedown = "moveRight()" onmouseup="stopMove()">get to de choppa on de right</button>
--->
+<p>THIS... IS... AGAR! (SIMPLE)</p>
+
+<button onmousedown="myBox.setSpeedY(-1)" onmouseup="">Go uppers</button>
+<button onmousedown="myBox.setSpeedY(1)" onmouseup="">get down boi</button>
+<button onmousedown = "myBox.setSpeedX(-1)" onmouseup="">Slide to the left</button>
+<button onmousedown = "myBox.setSpeedX(1)" onmouseup="">get to de choppa on de right</button>
+
 <p id="jsprintout"></p>
 
 <script src = "scripts/agarsimple.js"> </script>

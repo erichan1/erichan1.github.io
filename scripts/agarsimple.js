@@ -35,6 +35,7 @@ var myGameArea = {
         window.addEventListener('keyup',function(e) {
             myGameArea.keys[e.keyCode]=false;
         })
+        
     },
     clear: function() {
         this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
@@ -215,8 +216,8 @@ function keyboardTwo(myComponent) {
 function updateGameArea() {
     myGameArea.clear(); //clears game area
     
-    myBox.setSpeedX(0); //sets speeds to 0
-    myBox.setSpeedY(0);
+    //myBox.setSpeedX(0); //sets speeds to 0
+    //myBox.setSpeedY(0);
     myBoxTwo.setSpeedX(0); //sets speeds to 0
     myBoxTwo.setSpeedY(0);
     keyboardOne(myBox); //sets speed according to keyboard
