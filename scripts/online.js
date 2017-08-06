@@ -5,6 +5,7 @@ var myBox; //equivalent to myGamePiece in the tutorial.
 var myObstacles;
 var myWalls; 
 var myScore;
+var myKeyboard;
 
 
 
@@ -43,7 +44,7 @@ function component(height,width,color,x,y) {
     this.y=y;
     this.speedX=0;
     this.speedY=0;
-    this.accelUpdate; //the variable used to update acceleration methods
+    
     this.update = function() {
         ctx = myGameArea.context;
         ctx.fillStyle=color;
@@ -69,13 +70,6 @@ function component(height,width,color,x,y) {
         clearInterval(this.accelUpdate);
         this.speedX = 0;
         this.speedY = 0;
-    }
-    //accelerates box up. sets the global variable accelUpdate to set an interval that calls moveUp every second. this increases speedY by -1. 
-    this.setAccelX = function(xIncrement,time) {
-        accelUpdate=setInterval(this.speedX+=xIncrement,time);
-    }
-    this.setAccelY = function(yIncrement,time) {
-        accelUpdate=setInterval(this.speedY+=yIncrement,time);
     }
     //"destroys" the component. Still in memory, just is made into a point. 
     this.destroy=function() {
@@ -161,19 +155,19 @@ interfaces the component with the keyboard. relies on window.addEventListener in
 sets speed when arrowkeys are pressed. Orientation one. 
 */ 
 
-function keyboardOne(myComponent) {
-    if(inArray(myKeyboard.keysPressed,39)) {
+function keyboardOne(myComponent,board) {
+    if(inArray(board.getKeysPressed,39)) {
         //myBox.incrementSpeedX(4);
         myComponent.setSpeedX(1); //makes box go right 
     }
-    if(inArray(myKeyboard.keysPressed,37)) {
+    if(inArray(board.getKeysPressed,37)) {
         myComponent.setSpeedX(-1); //makes box go left
     }
     
-    if(inArray(myKeyboard.keysPressed,38)) {
+    if(inArray(board.getKeysPressed,38)) {
         myComponent.setSpeedY(-1); //makes box go up
     }
-    if(inArray(myKeyboard.keysPressed,40)) {
+    if(inArray(board.getKeysPressed,40)) {
         myComponent.setSpeedY(1); //makes box go down.
     }
 }
@@ -185,20 +179,20 @@ interfaces the component with the keyboard. relies on window.addEventListener in
 sets speed when WASD are pressed. Orientation one. 
 */ 
 
-function keyboardTwo(myComponent) {
-    if(inArray(myKeyboard.keysPressed,68)) {
+function keyboardTwo(myComponent,board) {
+    if(inArray(board.getKeysPressed,68)) {
         //myBox.incrementSpeedX(4);
         myComponent.setSpeedX(1); //makes box go right 
     }
-    if(inArray(myKeyboard.keysPressed,65)) {
+    if(inArray(board.getKeysPressed,65)) {
         myComponent.setSpeedX(-1); //makes box go left
     }
    
     
-    if(inArray(myKeyboard.keysPressed,87)) {
+    if(inArray(board.getKeysPressed,87)) {
         myComponent.setSpeedY(-1); //makes box go up
     }
-    if(inArray(myKeyboard.keysPressed,83)) {
+    if(inArray(board.getKeysPressed,83)) {
         myComponent.setSpeedY(1); //makes box go down.
     }
     
@@ -220,7 +214,6 @@ function keyboard() {
     this.updateInterval = updateInterval;
     
     //contains keyIDs for all letters, arrow keys, space, some others.
-    
     this.keyIDs = [8,9,13,16,17,18,19,20,27,33,34,35,36,37,38,39,40,45,46,48,49,50,51,52,53,54,55,56,
                   57,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90];
     
@@ -230,9 +223,10 @@ function keyboard() {
     this.keysPressed = [];
     
     this.keysReleased = [];
-    this.interval = setInterval(this.keyboardUpdate,this.updateInterval); //not sure if this will work.
+    this.interval = setInterval(keyboardUpdate,100); //not sure if this will work.
     
     this.keyboardUpdate = function() {
+        
         //initializes keysNow and puts all keys pressed rn into the array. 
         this.keysNow = [];
         this.keysPressed = [];
@@ -252,7 +246,7 @@ function keyboard() {
         //compare now and before. 
         for(j=0;j<this.keysBefore.length;j++) {
             if(!inArray(this.keysNow,this.keysBefore[j])){
-                this.keysReleased.push(this.keysBefore[j]) //if something is in keysNow but not keysBefore goes in keysPressed.
+                this.keysReleased.push(this.keysBefore[j]) //if something is in keysBefore but not keysNow goes in keysReleased.
             }
         }
         //copies elements from keysNow to keysBefore; 
@@ -260,6 +254,12 @@ function keyboard() {
             this.keysBefore.push(this.keyNow[i]);  
         }
         console.log("keyBoardUpdate is working");
+    }
+    this.getKeysPressed = function() {
+        return this.keysPressed;
+    }
+    this.getKeysReleased = function() {
+        return this.keysReleased;
     }
     
 }
@@ -276,11 +276,12 @@ function inArray(array,object) {
 }
 
 //STATIC METHOD: updates game area. interval shown in var myGameArea.
-function updateGameArea(int) {
+function updateGameArea() {
+    //console.log("blerpu");
     myGameArea.clear(); //clears game area
 
-    keyboardOne(myBox); //sets speed according to keyboard
-    keyboardTwo(myBoxTwo);
+    keyboardOne(myBox,myKeyboard); //sets speed according to keyboard
+    keyboardTwo(myBoxTwo,myKeyboard);
     
     for(i=0;i<myWalls.length;i++) {
         myWalls[i].update();
