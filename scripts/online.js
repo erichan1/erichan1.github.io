@@ -2,12 +2,13 @@
 
 var updateInterval = 10; //How many milliseconds between each game update
 var myBox; //equivalent to myGamePiece in the tutorial.
+var myBoxTwo
 var myObstacles;
 var myWalls; 
 var myScore;
 var myKeyboard;
 
-
+//do I need any global vars up here? probably not tbh
 
 //MAIN: starts the game. Calls start() function in myGameArea. Creates a box, walls, and obstacles.
 function startGame() {
@@ -180,6 +181,7 @@ sets speed when WASD are pressed. Orientation one.
 */ 
 
 function keyboardTwo(myComponent,board) {
+
     if(inArray(board.getKeysPressed,68)) {
         //myBox.incrementSpeedX(4);
         myComponent.setSpeedX(1); //makes box go right 
@@ -200,7 +202,9 @@ function keyboardTwo(myComponent,board) {
 
 
 
-//keyboard interface. maybe make into class. holds what keys were pressed and released between last iteration. essentially a virtual model of what's going on in real keyboard.  
+/*
+keyboard class. holds what keys were pressed and released between last iteration. essentially a virtual model of what's going on in real keyboard. created to detect when a key changes from unpressed to pressed. probably already exists somewhere. setInterval has issues. 
+*/
 function keyboard() {
     
     this.keys = (this.keys || [] ); //put outside function. don't need to press a key to make keys array.  
@@ -218,11 +222,10 @@ function keyboard() {
                   57,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90];
     
     this.keysNow = [];
-    
     this.keysBefore = [];
     this.keysPressed = [];
-    
     this.keysReleased = [];
+    
     this.interval = setInterval(keyboardUpdate,100); //not sure if this will work.
     
     this.keyboardUpdate = function() {
@@ -253,7 +256,7 @@ function keyboard() {
         for(i=0;i<this.keysNow.length;i++) {
             this.keysBefore.push(this.keyNow[i]);  
         }
-        console.log("keyBoardUpdate is working");
+        console.log("keyBoardUpdate is working"); //trying to check if the function is running repeatedly. 
     }
     this.getKeysPressed = function() {
         return this.keysPressed;
@@ -277,7 +280,6 @@ function inArray(array,object) {
 
 //STATIC METHOD: updates game area. interval shown in var myGameArea.
 function updateGameArea() {
-    //console.log("blerpu");
     myGameArea.clear(); //clears game area
 
     keyboardOne(myBox,myKeyboard); //sets speed according to keyboard
