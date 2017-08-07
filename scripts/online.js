@@ -157,18 +157,18 @@ sets speed when arrowkeys are pressed. Orientation one.
 */ 
 
 function keyboardOne(myComponent,board) {
-    if(inArray(board.getKeysPressed,39)) {
+    if(inArray(board.keysPressed,39)) {
         //myBox.incrementSpeedX(4);
         myComponent.setSpeedX(1); //makes box go right 
     }
-    if(inArray(board.getKeysPressed,37)) {
+    if(inArray(board.keysPressed,37)) {
         myComponent.setSpeedX(-1); //makes box go left
     }
     
-    if(inArray(board.getKeysPressed,38)) {
+    if(inArray(board.keysPressed,38)) {
         myComponent.setSpeedY(-1); //makes box go up
     }
-    if(inArray(board.getKeysPressed,40)) {
+    if(inArray(board.keysPressed,40)) {
         myComponent.setSpeedY(1); //makes box go down.
     }
 }
@@ -226,7 +226,7 @@ function keyboard() {
     this.keysPressed = [];
     this.keysReleased = [];
     
-    this.interval = setInterval(keyboardUpdate,100); //not sure if this will work.
+    this.keyInterval = setInterval(keyboardUpdate,this.updateInterval); //not sure if this will work.
     
     this.keyboardUpdate = function() {
         
