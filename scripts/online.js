@@ -228,7 +228,7 @@ function keyboard() {
     
     this.keyInterval = setInterval(keyboardUpdate,this.updateInterval); //not sure if this will work.
     
-    this.keyboardUpdate = function() {
+    function keyboardUpdate() {
         
         //initializes keysNow and puts all keys pressed rn into the array. 
         this.keysNow = [];
