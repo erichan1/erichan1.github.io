@@ -14,6 +14,7 @@ var myKeyboard;
 function startGame() {
     myGameArea.start();
     myKeyboard = new keyboard();
+    myKeyboard.start();
     myBox = new component(30,30,"red",10,120);
     myWalls = [new component(5,myGameArea.canvas.width,"orange",0,0), //top wall
                new component(myGameArea.canvas.height,5,"orange",0,0), //left wall
@@ -203,14 +204,18 @@ function keyboardTwo(myComponent,board) {
 keyboard class. holds what keys were pressed and released between last iteration. essentially a virtual model of what's going on in real keyboard. created to detect when a key changes from unpressed to pressed. probably already exists somewhere. setInterval has issues. 
 */
 function keyboard() {
+    var self = this;
+    //made a start function to c if it would work. 
+    this.start = function() {
+        this.keys = [];
+        this.keyDown = window.addEventListener('keydown',function(e) {
+            this.keys[e.keyCode] = true; 
+        })
+        this.keyUp = window.addEventListener('keyup',function(e) {
+            this.keys[e.keyCode]=false;
+        })
+    }
     
-    this.keys = (this.keys || [] ); //put outside function. don't need to press a key to make keys array.  
-    window.addEventListener('keydown',function(e) {
-        this.keys[e.keyCode] = true; 
-    })
-    window.addEventListener('keyup',function(e) {
-        this.keys[e.keyCode]=false;
-    })
     
     this.updateInterval = updateInterval;
     
@@ -223,35 +228,34 @@ function keyboard() {
     this.keysPressed = [];
     this.keysReleased = [];
     
-    this.keyInterval = setInterval(keyboardUpdate,this.updateInterval); //not sure if this will work.
+    this.keyInterval = setInterval(this.keyboardUpdate,this.updateInterval); //not sure if this will work.
     
     function keyboardUpdate() {
-        
         //initializes keysNow and puts all keys pressed rn into the array. 
-        this.keysNow = [];
-        this.keysPressed = [];
-        this.keysReleased = [];
-        for(i=0;i<this.keyIDs.length;i++) {
-            if(this.keys[this.keyIDs[i]]==true){
-                this.keysNow.push(this.keyIDs[i]);
+        self.keysNow = [];
+        self.keysPressed = [];
+        self.keysReleased = [];
+        for(i=0;i<self.keyIDs.length;i++) {
+            if(self.keys[self.keyIDs[i]]==true){
+                self.keysNow.push(self.keyIDs[i]);
             }      
         }
         
         //compare now and before. 
-        for(i=0;i<this.keysNow.length;i++) {
-            if(!inArray(this.keysBefore,this.keysNow[i])){
-                this.keysPressed.push(this.keysNow[i]) //if something is in keysNow but not keysBefore goes in keysPressed.
+        for(i=0;i<self.keysNow.length;i++) {
+            if(!inArray(self.keysBefore,self.keysNow[i])){
+                self.keysPressed.push(self.keysNow[i]) //if something is in keysNow but not keysBefore goes in keysPressed.
             }
         }
         //compare now and before. 
-        for(j=0;j<this.keysBefore.length;j++) {
-            if(!inArray(this.keysNow,this.keysBefore[j])){
-                this.keysReleased.push(this.keysBefore[j]) //if something is in keysBefore but not keysNow goes in keysReleased.
+        for(j=0;j<self.keysBefore.length;j++) {
+            if(!inArray(self.keysNow,self.keysBefore[j])){
+                self.keysReleased.push(self.keysBefore[j]) //if something is in keysBefore but not keysNow goes in keysReleased.
             }
         }
         //copies elements from keysNow to keysBefore; 
-        for(i=0;i<this.keysNow.length;i++) {
-            this.keysBefore.push(this.keyNow[i]);  
+        for(i=0;i<self.keysNow.length;i++) {
+            self.keysBefore.push(self.keyNow[i]);  
         }
         console.log("keyBoardUpdate is working"); //trying to check if the function is running repeatedly. 
     }
