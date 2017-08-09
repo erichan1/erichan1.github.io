@@ -196,11 +196,8 @@ function keyboardTwo(myComponent,board) {
     }
     if(inArray(board.getKeysPressed,83)) {
         myComponent.setSpeedY(1); //makes box go down.
-    }
-    
+    }  
 }
-
-
 
 /*
 keyboard class. holds what keys were pressed and released between last iteration. essentially a virtual model of what's going on in real keyboard. created to detect when a key changes from unpressed to pressed. probably already exists somewhere. setInterval has issues. 
