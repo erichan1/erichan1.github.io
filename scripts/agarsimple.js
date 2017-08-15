@@ -261,7 +261,7 @@ function updateGameArea() {
     }
     myBoxTwo.newPos();
     myBoxTwo.update();
-    myBox.newPos(); //shifts x and y based on speed.
+    myBox.newPos(); //shifts x and y based on speed
     myBox.update(); //draws myBox in the changed x and y position
 
     for(i=0;i<myWalls.length;i++) {
