@@ -1,6 +1,8 @@
-/*This is boxgame. There will be a red box on a white background. Walls will move from the right side towards the left. The box can be moved in any direction. If it collides with a box */
+/*This is boxgame. There will be a red box on a white background.
+Walls will move from the right side towards the left.
+The box can be moved in any direction. If it collides with a box */
 
-var myBox; //equivalent to myGamePiece in the tutorial.
+var myBox; //equivalent to myGamePiece.
 var myObstacles;
 var myWalls;
 var myScore;
@@ -75,7 +77,7 @@ function component(height,width,color,x,y) {
         this.speedX = 0;
         this.speedY = 0;
     }
-    //"destroys" the component. Still in memory, just is made into a point.
+    //"destroys" the component. Still in memory, just is made into a point. maybe set to null?
     this.destroy=function() {
         this.width=0;
         this.height=0;
@@ -97,7 +99,7 @@ function component(height,width,color,x,y) {
 }
 
 //STATIC METHOD: handles collision with walls. Takes two components.
-function wallColHandle(myComponent){
+function wallColCorrect(myComponent){
     if(wallColDetect(myComponent)=='vertical') {
         myComponent.x-=myComponent.speedX; //stops box right and left
     }
@@ -116,8 +118,8 @@ function wallColDetect(myComponent){
     }
 }
 
-//STATIC METHOD: handles collision with components. Takes two components. Only alters one component.
-function componentColHandle(myComponent,myComponent2){
+//STATIC METHOD: Corrects collision with components. Takes two components. Only alters one component. Directly changes component positions.
+function componentColCorrect(myComponent,myComponent2){
      if(componentColDetect(myComponent,myComponent2)) {
        var distAbs1 = Math.abs(myComponent.x+myComponent.width-myComponent2.x); //distance between right side myComponent and left myComponent2
        var distAbs2 = Math.abs(myComponent2.x+myComponent2.width-myComponent.x); //distance between right side myComponent2 and left myComponent
@@ -154,20 +156,70 @@ function componentColHandle(myComponent,myComponent2){
        if(distAbsX>distAbsY) {
          //myComponent.y-=myComponent.speedY;//moves box back according to its speed on y axis
          myComponent.y-=distY;//moves box back according to its speed on y axis
+         return [0,-distY];
        }
        else if(distAbsY>distAbsX){
          //myComponent.x-=myComponent.speedX; //moves box back according to its speed on x axis
          myComponent.x-=distX;
+         return [-distX,0];
        }
        else {
          myComponent.y-=distY;
          myComponent.x-=distX;
          //myComponent.y-=myComponent.speedY;//moves box back according to its speed on y axis
          //myComponent.x-=myComponent.speedX; //moves box back according to its speed on x axis
+         return [-distX,-distY];
+       }
+    }
+    return [0,0]; //if no Collision detected, then just return 0s. No changes occur.
+}
+
+//STATIC METHOD: handles collision with components. Takes two components. Only alters one component. returns required changes to X and Y.
+function componentColHandle(myComponent,myComponent2){
+     if(componentColDetect(myComponent,myComponent2)) {
+       var distAbs1 = Math.abs(myComponent.x+myComponent.width-myComponent2.x); //distance between right side myComponent and left myComponent2
+       var distAbs2 = Math.abs(myComponent2.x+myComponent2.width-myComponent.x); //distance between right side myComponent2 and left myComponent
+       var distAbs3 = Math.abs(myComponent.y+myComponent.height-myComponent2.y); //distance between top side myComponent2 and bottom myComponent
+       var distAbs4 = Math.abs(myComponent2.y+myComponent2.height-myComponent.y); //distance between top side myComponent and bottom myComponent2
+       var dist1 = myComponent.x+myComponent.width-myComponent2.x; //X position diff used to push component out of other component
+       var dist2 = -(myComponent2.x+myComponent2.width-myComponent.x); //X position diff used to push component out of other component
+       var dist3 = myComponent.y+myComponent.height-myComponent2.y; //Y position diff used to push component out of other component
+       var dist4 = -(myComponent2.y+myComponent2.height-myComponent.y); //Y position diff used to push component out of other component
+       var distAbsX; //relevant distX;
+       var distAbsY; //relevant distY;
+       var distX;
+       var distY;
+
+       //finds the distance between the relevant sides on X axis that will contact.
+       if (distAbs1<distAbs2) {
+         distAbsX=distAbs1;
+         distX=dist1;
+       }
+       else {
+         distAbsX=distAbs2;
+         distX=dist2;
+       }
+       //finds the distance between the relevant sides on Y axis that will contact.
+       if(distAbs3<distAbs4) {
+         distAbsY=distAbs3;
+         distY=dist3;
+       }
+       else {
+         distAbsY=distAbs4;
+         distY=dist4;
+       }
+       //depending on the position of the box, only one axis pushes back.
+       if(distAbsX>distAbsY) {
+         return [0,-distY]; //returns what you need to add to X and Y to make position correct.
+       }
+       else if(distAbsY>distAbsX){
+         return [-distX,0]; //returns what you need to add to X and Y to make position correct.
+       }
+       else {
+         return [-distX,-distY]; //returns what you need to add to X and Y to make position correct.
        }
     }
 }
-
 
 //STATIC METHOD: returns boolean if collision between components occurs
 function componentColDetect(myComponent,myComponent2){
@@ -225,7 +277,7 @@ function keyboardOne(myComponent) {
 /*
 STATIC METHOD:
 interfaces the component with the keyboard. relies on window.addEventListener in myGameArea.
-sets speed when WASD are pressed. Orientation one.
+sets speed when WASD are pressed. Orientation two.
 */
 function keyboardTwo(myComponent) {
     if(myGameArea.keys && myGameArea.keys[68]) {
@@ -265,13 +317,19 @@ function updateGameArea() {
     myBox.update(); //draws myBox in the changed x and y position
 
     for(i=0;i<myWalls.length;i++) {
-        componentColHandle(myBox,myWalls[i]);
-        componentColHandle(myBoxTwo,myWalls[i]);
+        componentColCorrect(myBox,myWalls[i]);
+        componentColCorrect(myBoxTwo,myWalls[i]);
     }
-    if(componentColDetect(myBox,myBoxTwo)) {
-       myBox.destroy();
-       myBoxTwo.enlarge(3);
-    }
+    //this section of code gets required changes from componentColHandle, then changes position all at once.
+    var boxOneX=componentColHandle(myBox,myBoxTwo)[0];
+    var boxOneY=componentColHandle(myBox,myBoxTwo)[1];
+    var boxTwoX=componentColHandle(myBoxTwo,myBox)[0];
+    var boxTwoY=componentColHandle(myBoxTwo,myBox)[1];
+    myBox.x+=boxOneX;
+    myBox.y+=boxOneY;
+    myBoxTwo.x+=boxTwoX;
+    myBoxTwo.y+=boxTwoY;
+
 }
 
 //STATIC METHOD: alters the HTML element jsprintout with inputed string
